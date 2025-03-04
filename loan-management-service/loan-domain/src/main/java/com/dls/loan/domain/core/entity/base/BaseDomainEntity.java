@@ -1,4 +1,4 @@
-package com.dls.loan.domain.core.entity;
+package com.dls.loan.domain.core.entity.base;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -18,5 +18,5 @@ public abstract class BaseDomainEntity<T> {
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
 
-    abstract boolean sameIdentityAs(T other);
+    protected abstract boolean sameIdentityAs(T other);
 }

@@ -5,12 +5,20 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/common/common-dataaccess/pom.xml" />
+        <option value="$PROJECT_DIR$/loan-management-service/loan-messaging/pom.xml" />
+        <option value="$PROJECT_DIR$/loan-management-service/loan-domain-core/pom.xml" />
+        <option value="$PROJECT_DIR$/loan-management-service/infrastructure/pom.xml" />
+        <option value="$PROJECT_DIR$/loan-management-service/loan-domain/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/common/common-domain/pom.xml" />
+        <option value="$PROJECT_DIR$/common/pom.xml" />
+        <option value="$PROJECT_DIR$/loan-management-service/loan-dataaccess/pom.xml" />
         <option value="$PROJECT_DIR$/loan-management-service/loan-domain/loan-application-service/pom.xml" />
-        <option value="$PROJECT_DIR$/loan-management-service/loan-domain/pom.xml" />
+        <option value="$PROJECT_DIR$/loan-management-service/loan-messaging/pom.xml" />
       </set>
     </option>
   </component>

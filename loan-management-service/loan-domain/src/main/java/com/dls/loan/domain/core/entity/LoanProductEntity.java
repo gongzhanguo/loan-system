@@ -5,7 +5,7 @@ import com.dls.loan.domain.core.enums.RepaymentOrder;
 
 import java.math.BigDecimal;
 
-public class Product {
+public class LoanProductEntity {
 
     String productId;
     RepaymentOrder repaymentOrder;

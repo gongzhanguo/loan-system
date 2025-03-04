@@ -1,24 +1,26 @@
-package com.dls.loan.domain.application.service.dto.disbursement;
+package com.dls.loan.application.dto.disbursement;
 
-import com.dls.loan.domain.core.valueobject.TransactionStatus;
+import com.dls.loan.domain.core.enums.DisbursementStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
-import java.util.UUID;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 public class DisbursementLoanResponse {
 
     @NotNull
-    private final UUID accountId;
+    private final String loanId;
     @NotNull
-    private final UUID trackingId;
+    private final String trackingId;
     @NotNull
-    private final TransactionStatus transactionStatus;
+    private final DisbursementStatus disbursementStatus;
     @NotNull
     private final String message;
+
 }

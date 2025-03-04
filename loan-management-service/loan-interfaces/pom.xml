@@ -10,7 +10,7 @@
     <artifactId>loan-interfaces</artifactId>
     <packaging>jar</packaging>
 
-    <name>loan-interface</name>
+    <name>loan-interfaces</name>
 
     <dependencies>
         <dependency>

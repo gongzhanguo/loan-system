@@ -14,9 +14,17 @@
 
     <modules>
         <module>loan-application</module>
-        <module>loan-container</module>
-        <module>loan-dataaccess</module>
+        <module>loan-interfaces</module>
         <module>loan-domain</module>
-        <module>loan-messaging</module>
+        <module>loan-infrastructure</module>
+        <module>loan-container</module>
     </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>

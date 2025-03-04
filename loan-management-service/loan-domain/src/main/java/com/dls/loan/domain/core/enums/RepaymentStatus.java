@@ -1,6 +1,6 @@
 package com.dls.loan.domain.core.enums;
 
-public enum DisbursementStatus {
+public enum RepaymentStatus {
 
     PROCESSING,
     SUCCESS,

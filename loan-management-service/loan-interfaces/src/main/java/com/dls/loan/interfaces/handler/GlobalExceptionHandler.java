@@ -1,60 +1,30 @@
-package com.dls.loan.infrastructure.handler;
+package com.dls.loan.interfaces.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.ValidationException;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ResponseBody
-    @ExceptionHandler(value = {Exception.class})
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorDTO handleException(Exception exception) {
-        log.error(exception.getMessage(), exception);
-        return ErrorDTO.builder()
-                .code(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .message("Unexpected error!")
-                .build();
-    }
-
-    @ResponseBody
-    @ExceptionHandler(value = {ValidationException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorDTO handleException(ValidationException validationException) {
-       ErrorDTO errorDTO;
-       if (validationException instanceof ConstraintViolationException) {
-           String violations = extractViolationsFromException((ConstraintViolationException) validationException);
-           log.error(violations, validationException);
-           errorDTO = ErrorDTO.builder()
-                   .code(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                   .message(violations)
-                   .build();
-       } else {
-           String exceptionMessage = validationException.getMessage();
-           log.error(exceptionMessage, validationException);
-           errorDTO = ErrorDTO.builder()
-                   .code(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                   .message(exceptionMessage)
-                   .build();
-       }
-       return errorDTO;
-    }
-
-    private String extractViolationsFromException(ConstraintViolationException validationException) {
-        return validationException.getConstraintViolations()
-                .stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.joining("--"));
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
 }

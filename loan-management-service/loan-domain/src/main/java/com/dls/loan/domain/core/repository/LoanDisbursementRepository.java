@@ -1,17 +1,12 @@
-package com.dls.loan.dataaccess.loan.adapter;
+package com.dls.loan.domain.core.repository;
 
-import org.springframework.stereotype.Component;
+import com.dls.loan.domain.core.entity.LoanDisbursementEntity;
 
 import java.util.Optional;
 
-@Component
-public class LoanDisbursementRepositoryImpl {
+public interface LoanDisbursementRepository {
 
-    public LoanDisbursement save(LoanDisbursement loanDisbursement) {
-        return null;
-    }
+    LoanDisbursementEntity save(LoanDisbursementEntity loanDisbursementEntity);
 
-    public Optional<LoanDisbursement> findByLoanId(LoanId loanId) {
-        return Optional.empty();
-    }
+    Optional<LoanDisbursementEntity> findByTrackingId(String loanId);
 }

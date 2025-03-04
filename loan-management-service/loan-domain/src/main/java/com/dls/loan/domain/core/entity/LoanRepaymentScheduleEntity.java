@@ -1,10 +1,10 @@
 package com.dls.loan.domain.core.entity;
 
+import com.dls.loan.domain.core.entity.base.BaseDomainEntity;
 import com.dls.loan.domain.core.enums.ScheduleStatus;
 import lombok.*;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -18,7 +18,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Table(name = "loan_repayment_schedule")
 @Entity
-public class RepaymentSchedule extends BaseDomainEntity<RepaymentSchedule> {
+public class LoanRepaymentScheduleEntity extends BaseDomainEntity<LoanRepaymentScheduleEntity> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class RepaymentSchedule extends BaseDomainEntity<RepaymentSchedule> {
 
     @ManyToOne
     @JoinColumn(name = "loan_id")
-    private LoanAccount loanAccount;
+    private LoanAccountEntity loanAccount;
     private Integer periodNo;
     private BigDecimal principleAmount;
     private BigDecimal interestAmount;
@@ -40,12 +40,12 @@ public class RepaymentSchedule extends BaseDomainEntity<RepaymentSchedule> {
     @Enumerated(EnumType.STRING)
     private ScheduleStatus scheduleStatus;
 
-    public void initAndValidateRepaymentSchedule(LoanAccount loanAccount) {
-        this.loanAccount = loanAccount;
+    public void initAndValidateRepaymentSchedule(LoanAccountEntity loanAccountEntity) {
+        this.loanAccount = loanAccountEntity;
     }
 
     @Override
-    public boolean sameIdentityAs(RepaymentSchedule other) {
+    public boolean sameIdentityAs(LoanRepaymentScheduleEntity other) {
         return other != null && id.equals(other.id)
                 && loanAccount.getLoanId().equals(other.getLoanAccount().getLoanId());
     }

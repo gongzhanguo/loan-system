@@ -1,30 +1,12 @@
 package com.dls.loan.domain.core.repository;
 
-import com.dls.loan.dataaccess.loan.mapper.LoanAccountDataAccessMapper;
-import com.dls.loan.domain.core.valueobject.LoanId;
-import org.springframework.stereotype.Component;
+import com.dls.loan.domain.core.entity.LoanAccountEntity;
 
 import java.util.Optional;
 
-@Component
-public class LoanAccountRepositoryImpl {
+public interface LoanAccountRepository {
 
-    private LoanAccountJpaRepository loanAccountJpaRepository;
-    private LoanAccountDataAccessMapper loanAccountDataAccessMapper;
+    LoanAccountEntity save(LoanAccountEntity loanAccountEntity);
 
-    public LoanAccountRepositoryImpl(LoanAccountJpaRepository loanAccountJpaRepository,
-                                     LoanAccountDataAccessMapper loanAccountDataAccessMapper) {
-        this.loanAccountJpaRepository = loanAccountJpaRepository;
-        this.loanAccountDataAccessMapper = loanAccountDataAccessMapper;
-    }
-
-    public LoanAccount save(LoanAccount loanAccount) {
-        loanAccountJpaRepository.save(loanAccountDataAccessMapper.loanAccountToLoanAccountEntity(loanAccount));
-        return loanAccount;
-    }
-
-    public Optional<LoanAccount> findByAccountId(LoanId loanId) {
-        return loanAccountJpaRepository.findById(loanId.getValue())
-                .map(loanAccountDataAccessMapper::loanAccountEntityToLoanAccount);
-    }
+    Optional<LoanAccountEntity> findByLoanId(String loanId);
 }

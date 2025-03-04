@@ -1,12 +1,25 @@
 package com.dls.loan.domain.core.event;
 
-import com.dls.loan.domain.core.entity.LoanDisbursement;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 
-public class LoanDisbursedEvent extends LoanDisbursementEvent {
+@Getter
+@Setter
+@Builder
+public class LoanDisbursedEvent extends DomainEvent {
 
-    public LoanDisbursedEvent(LoanDisbursement loanDisbursement, LocalDateTime createTimestamp) {
-        super(loanDisbursement, createTimestamp);
-    }
+    private String trackingId;
+    private String loanId;
+    private String productId;
+    private String customerId;
+    private BigDecimal disbursementAmount;
+    private String customerName;
+    private String identityNo;
+    private String paymentAccountNo;
+    private String paymentBankName;
+    private String paymentBankNo;
+
 }

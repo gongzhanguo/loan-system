@@ -1,8 +1,6 @@
 package com.dls.loan.domain.core.exception;
 
 
-import com.dls.common.domain.exception.DomainException;
-
 public class LoanDomainException extends DomainException {
 
     public LoanDomainException(String message) {

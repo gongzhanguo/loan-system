@@ -1,10 +1,10 @@
 package com.dls.loan.domain.core.entity;
 
+import com.dls.loan.domain.core.entity.base.BaseDomainEntity;
 import com.dls.loan.domain.core.enums.BankAccountType;
 import lombok.*;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Getter
 @Setter
@@ -13,14 +13,14 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Table(name = "loan_bank_account")
 @Entity
-public class BankAccount extends BaseDomainEntity<BankAccount> {
+public class BankAccountEntity extends BaseDomainEntity<BankAccountEntity> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "loan_id")
-    private LoanAccount loanAccount;
+    private LoanAccountEntity loanAccount;
 
     private String customerName;
     private String identityNo;
@@ -31,12 +31,12 @@ public class BankAccount extends BaseDomainEntity<BankAccount> {
     private BankAccountType bankAccountType;
 
     @Override
-    boolean sameIdentityAs(BankAccount other) {
+    public boolean sameIdentityAs(BankAccountEntity other) {
         return other != null && id.equals(other.id)
                 && loanAccount.getLoanId().equals(other.getLoanAccount().getLoanId());
     }
 
-    public void initAndValidateBankAccount(LoanAccount loanAccount) {
-        this.loanAccount = loanAccount;
+    public void initAndValidateBankAccount(LoanAccountEntity loanAccountEntity) {
+        this.loanAccount = loanAccountEntity;
     }
 }

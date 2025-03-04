@@ -1,5 +1,6 @@
-package com.dls.loan.application.entity;
+package com.dls.loan.infrastructure.entity;
 
+import com.dls.loan.domain.core.enums.DomainEventType;
 import com.dls.loan.application.enums.PaymentOutboxStatus;
 import com.dls.loan.domain.core.entity.base.BaseDomainEntity;
 import lombok.*;
@@ -17,13 +18,12 @@ public class LoanPaymentOutboxEntity extends BaseDomainEntity<LoanPaymentOutboxE
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String trackingId;
     @Enumerated(EnumType.STRING)
-    private EventType eventType;
+    private DomainEventType domainEventType;
     private String payload;
     @Enumerated(EnumType.STRING)
-    private PaymentOutboxStatus paymentOutboxStatus;
+    private PaymentOutboxStatus outboxStatus;
 
     @Override
     protected boolean sameIdentityAs(LoanPaymentOutboxEntity other) {

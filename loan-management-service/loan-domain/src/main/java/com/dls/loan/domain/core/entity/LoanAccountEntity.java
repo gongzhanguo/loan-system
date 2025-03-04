@@ -1,5 +1,6 @@
 package com.dls.loan.domain.core.entity;
 
+import com.dls.loan.domain.core.entity.base.BaseDomainEntity;
 import com.dls.loan.domain.core.enums.*;
 import com.dls.loan.domain.core.exception.LoanDomainException;
 import lombok.*;
@@ -16,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "loan_account")
 @Entity
-public class LoanAccount extends BaseDomainEntity<LoanAccount> {
+public class LoanAccountEntity extends BaseDomainEntity<LoanAccountEntity> {
 
     @Id
     private String loanId;
@@ -52,9 +53,9 @@ public class LoanAccount extends BaseDomainEntity<LoanAccount> {
     private LocalDate lastRepaymentDate;
 
     @OneToMany(mappedBy = "loanAccount", cascade = CascadeType.ALL)
-    private List<BankAccount> bankAccounts;
+    private List<BankAccountEntity> bankAccountEntities;
     @OneToMany(mappedBy = "loanAccount", cascade = CascadeType.ALL)
-    private List<RepaymentSchedule> repaymentSchedules;
+    private List<LoanRepaymentScheduleEntity> loanRepaymentScheduleEntities;
 
     public void initAndValidateLoanAccount() {
         initialize();
@@ -75,13 +76,13 @@ public class LoanAccount extends BaseDomainEntity<LoanAccount> {
     }
 
     private void initializeRepaymentSchedule() {
-        repaymentSchedules.stream().forEach(repaymentSchedule -> {
+        loanRepaymentScheduleEntities.stream().forEach(repaymentSchedule -> {
             repaymentSchedule.initAndValidateRepaymentSchedule(this);
         });
     }
 
     private void initializeBankAccount() {
-        bankAccounts.stream().forEach(bankAccount -> {
+        bankAccountEntities.stream().forEach(bankAccount -> {
             bankAccount.initAndValidateBankAccount(this);
         });
     }
@@ -102,7 +103,7 @@ public class LoanAccount extends BaseDomainEntity<LoanAccount> {
         if (gracePeriod < 0) {
             throw new LoanDomainException("宽限期天数必须大于0");
         }
-        if (bankAccounts == null || bankAccounts.isEmpty()) {
+        if (bankAccountEntities == null || bankAccountEntities.isEmpty()) {
             throw new LoanDomainException("银行账户不能为空");
         }
         validateRepaymentSchedule();
@@ -111,7 +112,7 @@ public class LoanAccount extends BaseDomainEntity<LoanAccount> {
     }
 
     private void validateRepaymentSchedule() {
-        BigDecimal totalPrincipleAmount = repaymentSchedules.stream().map(RepaymentSchedule::getPrincipleAmount)
+        BigDecimal totalPrincipleAmount = loanRepaymentScheduleEntities.stream().map(LoanRepaymentScheduleEntity::getPrincipleAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         if (totalPrincipleAmount.compareTo(principleAmount) != 0) {
 //            throw new LoanDomainException("还款计划生成异常，还款计划本金总额和贷款金额不相等");
@@ -119,10 +120,10 @@ public class LoanAccount extends BaseDomainEntity<LoanAccount> {
     }
 
     private void validateBankAccount() {
-        bankAccounts.stream().filter(bankAccount -> bankAccount.getBankAccountType() == BankAccountType.PAYMENT)
+        bankAccountEntities.stream().filter(bankAccount -> bankAccount.getBankAccountType() == BankAccountType.PAYMENT)
                 .findFirst().orElseThrow(() -> new LoanDomainException("贷款账户信息中不存在支付账户"));
 
-        bankAccounts.stream().filter(bankAccount -> bankAccount.getBankAccountType() == BankAccountType.AUTO_DEDUCTION)
+        bankAccountEntities.stream().filter(bankAccount -> bankAccount.getBankAccountType() == BankAccountType.AUTO_DEDUCTION)
                 .findFirst().orElseThrow(() -> new LoanDomainException("贷款账户信息中不存在扣款账户"));
     }
 
@@ -135,7 +136,7 @@ public class LoanAccount extends BaseDomainEntity<LoanAccount> {
     }
 
     @Override
-    public boolean sameIdentityAs(LoanAccount other) {
+    public boolean sameIdentityAs(LoanAccountEntity other) {
         return other != null && loanId.equals(other.loanId);
     }
 }

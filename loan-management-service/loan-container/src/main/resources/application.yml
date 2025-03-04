@@ -16,7 +16,6 @@ spring:
       mode: ALWAYS
       schema-locations: classpath:init-schema.sql
 
-loan-service:
-  snow-flake:
-    datacenter_id: 1
-    machine_id: 1
+snow-flake:
+  datacenter_id: 1
+  machine_id: 1

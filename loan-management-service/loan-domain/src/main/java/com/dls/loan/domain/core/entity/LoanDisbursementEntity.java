@@ -1,5 +1,6 @@
 package com.dls.loan.domain.core.entity;
 
+import com.dls.loan.domain.core.entity.base.BaseDomainEntity;
 import com.dls.loan.domain.core.enums.*;
 import com.dls.loan.domain.core.exception.LoanDomainException;
 import lombok.*;
@@ -15,13 +16,15 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Table(name = "loan_disbursement")
 @Entity
-public class LoanDisbursement extends BaseDomainEntity<LoanDisbursement>  {
+public class LoanDisbursementEntity extends BaseDomainEntity<LoanDisbursementEntity> {
 
     @Id
-    private String loanId;
+    private String trackingId;
+    @JoinColumn(name = "loan_id")
+    @OneToOne(cascade = CascadeType.PERSIST)
+    private LoanAccountEntity loanAccount;
     private String productId;
     private LocalDate disbursementDate;
-    private String trackingId;
     private BigDecimal disbursementAmount;
     private String customerId;
     private LocalDate maturityDate;
@@ -38,7 +41,10 @@ public class LoanDisbursement extends BaseDomainEntity<LoanDisbursement>  {
     @Enumerated(EnumType.STRING)
     private DisbursementStatus disbursementStatus;
     @Enumerated(EnumType.STRING)
-    private FailType failType;
+    private DisburseFailType disburseFailType;
+    private String paymentAccountNo;
+    private String paymentBankName;
+    private String paymentBankNo;
 
     public void validate() {
         validateDisbursementAmount();
@@ -72,7 +78,7 @@ public class LoanDisbursement extends BaseDomainEntity<LoanDisbursement>  {
     }
 
     @Override
-    public boolean sameIdentityAs(LoanDisbursement other) {
-        return other!= null && loanId.equals(other.loanId);
+    public boolean sameIdentityAs(LoanDisbursementEntity other) {
+        return other!= null && trackingId.equals(other.trackingId);
     }
 }

@@ -1,4 +1,4 @@
-package com.dls.common.domain.exception;
+package com.dls.loan.domain.core.exception;
 
 public class DomainException extends RuntimeException {
 

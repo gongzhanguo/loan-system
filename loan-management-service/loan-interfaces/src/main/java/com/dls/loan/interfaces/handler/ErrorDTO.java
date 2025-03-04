@@ -1,4 +1,4 @@
-package com.dls.loan.infrastructure.handler;
+package com.dls.loan.interfaces.handler;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "snow-flake")
-public class SnowFlakConfiguration {
+public class SnowFlakeConfiguration {
 
     private String machineId;
     private String datacenterId;

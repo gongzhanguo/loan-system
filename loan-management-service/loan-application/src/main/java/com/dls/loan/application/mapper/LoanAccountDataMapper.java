@@ -1,4 +1,4 @@
-package com.dls.loan.domain.application.service.mapper;
+package com.dls.loan.application.mapper;
 
 public class LoanAccountDataMapper {
 

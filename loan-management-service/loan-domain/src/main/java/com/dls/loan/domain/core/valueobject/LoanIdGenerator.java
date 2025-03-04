@@ -1,2 +1,5 @@
-package com.dls.loan.domain.core.valueobject;public interface LoanIdGenerator {
+package com.dls.loan.domain.core.valueobject;
+
+public interface LoanIdGenerator {
+    String generate();
 }

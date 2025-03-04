@@ -1,4 +1,6 @@
-package com.dls.infrastructure.utils;
+package com.dls.loan.application.utils;
+
+import org.springframework.stereotype.Component;
 
 public class SnowFlakeGenerator {
     // 起始时间戳（可根据需要调整）
@@ -20,14 +22,16 @@ public class SnowFlakeGenerator {
     private static final long MAX_DATACENTER_ID = ~(-1L << DATACENTER_BIT);
 
     // 成员变量
-    private final long datacenterId = Long.parseLong(System.getProperty("loan-service.snow-flake.datacenter_id"));
-    private final long machineId = Long.parseLong(System.getProperty("loan-service.snow-flake.machine_id"));
+    private long datacenterId;
+    private long machineId;
     private long sequence = 0L;
     private long lastTimestamp = -1L;
 
-    public SnowFlakeGenerator() {
+    public SnowFlakeGenerator(long datacenterId, long machineId) {
         validateId(datacenterId, MAX_DATACENTER_ID, "Datacenter ID");
         validateId(machineId, MAX_MACHINE_ID, "Machine ID");
+        this.datacenterId = datacenterId;
+        this.machineId = machineId;
     }
 
     private void validateId(long id, long maxId, String idName) {

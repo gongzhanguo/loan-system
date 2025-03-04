@@ -1,17 +1,17 @@
-package com.dls.infrastructure.repository;
+package com.dls.loan.infrastructure.repository;
 
-import com.dls.loan.domain.core.model.LoanAccount;
+import com.dls.loan.domain.core.entity.LoanAccountEntity;
 import com.dls.loan.domain.core.repository.LoanAccountRepository;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface LoanAccountJpaRepository extends CrudRepository<LoanAccount, String>, LoanAccountRepository {
+public interface LoanAccountJpaRepository extends JpaRepository<LoanAccountEntity, String>, LoanAccountRepository {
 
-    LoanAccount save(LoanAccount loanAccount);
+    LoanAccountEntity save(LoanAccountEntity loanAccountEntity);
 
-    Optional<LoanAccount> findByLoanId(String loanId);
+    Optional<LoanAccountEntity> findByLoanId(String loanId);
 
 }

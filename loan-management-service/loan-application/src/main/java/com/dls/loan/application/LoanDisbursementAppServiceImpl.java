@@ -2,54 +2,85 @@ package com.dls.loan.application;
 
 import com.dls.loan.application.dto.disbursement.DisbursementLoanCommand;
 import com.dls.loan.application.dto.disbursement.DisbursementLoanResponse;
+import com.dls.loan.application.dto.disbursement.TrackingDisburseStatusResponse;
+import com.dls.loan.application.mapper.LoanBankAccountDataMapper;
 import com.dls.loan.application.mapper.LoanDisbursementDataMapper;
-import com.dls.loan.application.ports.input.service.LoanDisbursementService;
+import com.dls.loan.domain.core.LoanDisbursementService;
+import com.dls.loan.domain.core.entity.BankAccountEntity;
+import com.dls.loan.domain.core.entity.LoanDisbursementEntity;
+import com.dls.loan.domain.core.enums.DomainEventType;
+import com.dls.loan.domain.core.event.DomainEventPublisher;
 import com.dls.loan.domain.core.event.LoanDisbursedEvent;
 import com.dls.loan.domain.core.exception.LoanDomainException;
-import com.dls.loan.domain.core.model.LoanDisbursement;
 import com.dls.loan.domain.core.repository.LoanDisbursementRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
-public class LoanDisbursementServiceImpl implements LoanDisbursementService {
+public class LoanDisbursementAppServiceImpl implements LoanDisbursementAppService {
 
+    private final LoanDisbursementService loanDisbursementService;
     private final LoanDisbursementDataMapper loanDisbursementDataMapper;
+    private final LoanBankAccountDataMapper loanBankAccountDataMapper;
     private final LoanDisbursementRepository loanDisbursementRepository;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final DomainEventPublisher domainEventPublisher;
 
-    public LoanDisbursementServiceImpl(LoanDisbursementDataMapper loanDisbursementDataMapper,
-                                       LoanDisbursementRepository loanDisbursementRepository,
-                                       ApplicationEventPublisher applicationEventPublisher) {
+    public LoanDisbursementAppServiceImpl(LoanDisbursementService loanDisbursementService,
+                                          LoanDisbursementDataMapper loanDisbursementDataMapper,
+                                          LoanBankAccountDataMapper loanBankAccountDataMapper,
+                                          LoanDisbursementRepository loanDisbursementRepository,
+                                          DomainEventPublisher domainEventPublisher) {
+        this.loanDisbursementService = loanDisbursementService;
         this.loanDisbursementDataMapper = loanDisbursementDataMapper;
+        this.loanBankAccountDataMapper = loanBankAccountDataMapper;
         this.loanDisbursementRepository = loanDisbursementRepository;
-        this.applicationEventPublisher = applicationEventPublisher;
+        this.domainEventPublisher = domainEventPublisher;
     }
 
     @Override
+    @Transactional
     public DisbursementLoanResponse disburse(DisbursementLoanCommand disbursementLoanCommand) {
-        LoanDisbursement loanDisbursement = loanDisbursementDataMapper.disbursementLoanCommandToDisbursement(disbursementLoanCommand);
-        loanDisbursement.validate();
-        LoanDisbursedEvent loanDisbursedEvent = saveLoanDisbursement(loanDisbursement);
+        LoanDisbursementEntity loanDisbursementEntity = loanDisbursementDataMapper
+                .disbursementLoanCommandToDisbursement(disbursementLoanCommand);
 
-        DisbursementLoanResponse disbursementLoanResponse = loanDisbursementDataMapper
-                .loanDisbursementToDisbursementLoanResponse(loanDisbursement);
+        List<BankAccountEntity> bankAccountEntities = loanBankAccountDataMapper.bankAccountDTOToBankAccountEntities(
+                disbursementLoanCommand.getPaymentBankAccount(), disbursementLoanCommand.getAutoDeductionBankAccount());
 
-        applicationEventPublisher.publishEvent(loanDisbursedEvent);
-        // TODO 通知支付网关付款
+        LoanDisbursedEvent loanDisbursedEvent = loanDisbursementService
+                .disburse(loanDisbursementEntity, bankAccountEntities);
 
-        return disbursementLoanResponse;
+        persistence(loanDisbursementEntity);
+
+        domainEventPublisher.publishEvent(loanDisbursedEvent.getTrackingId(),
+                DomainEventType.LOAN_DISBURSE, loanDisbursedEvent);
+
+        return loanDisbursementDataMapper.loanDisbursementToDisbursementLoanResponse(loanDisbursementEntity);
     }
 
-    private LoanDisbursedEvent saveLoanDisbursement(LoanDisbursement loanDisbursement) {
-        LoanDisbursement loanDisbursementResult = loanDisbursementRepository.save(loanDisbursement);
-        if (loanDisbursementResult == null) {
+    @Override
+    public TrackingDisburseStatusResponse trackDisburseStatus(String trackingId) {
+        Optional<LoanDisbursementEntity> loanDisbursementEntity = loanDisbursementRepository.findByTrackingId(trackingId);
+        if (!loanDisbursementEntity.isPresent()) {
+            throw new LoanDomainException("贷款放款信息不存在，交易流水号：" + trackingId);
+        }
+        return TrackingDisburseStatusResponse.builder()
+                .trackingId(trackingId)
+                .disbursementStatus(loanDisbursementEntity.get().getDisbursementStatus())
+                .fileType(loanDisbursementEntity.get().getDisburseFailType().toString())
+                .build();
+    }
+
+    private void persistence(LoanDisbursementEntity loanDisbursementEntity) {
+        LoanDisbursementEntity loanDisbursementEntityResult = loanDisbursementRepository.save(loanDisbursementEntity);
+        if (loanDisbursementEntityResult == null) {
             log.error("贷款放款信息存储数据库失败！");
             throw new LoanDomainException("贷款放款信息存储数据库失败！");
         }
-        log.info("贷款放款信息存储成功，借据号：{}", loanDisbursement.getLoanId().getValue());
-        return new LoanDisbursedEvent(loanDisbursement);
+        log.info("贷款放款信息存储成功，借据号：{}", loanDisbursementEntity.getLoanAccount().getLoanId());
     }
 }

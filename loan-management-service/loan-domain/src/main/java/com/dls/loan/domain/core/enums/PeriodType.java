@@ -1,4 +1,4 @@
-package com.dls.loan.domain.core.valueobject;
+package com.dls.loan.domain.core.enums;
 
 public enum PeriodType {
     DAY,

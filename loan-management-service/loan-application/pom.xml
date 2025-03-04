@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>com.loan.system</groupId>
-            <artifactId>loan-application-service</artifactId>
+            <artifactId>loan-domain</artifactId>
         </dependency>
     </dependencies>
 </project>

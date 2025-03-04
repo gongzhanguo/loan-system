@@ -1,6 +1,6 @@
 package com.dls.loan.domain.core.enums;
 
-public enum FailType {
+public enum DisburseFailType {
 
     PAYMENT_FAIL;
 }

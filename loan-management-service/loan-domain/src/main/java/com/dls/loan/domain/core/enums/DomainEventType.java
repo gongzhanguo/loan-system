@@ -1,6 +1,6 @@
-package com.dls.loan.application.entity;
+package com.dls.loan.domain.core.enums;
 
-public enum EventType {
+public enum DomainEventType {
     LOAN_DISBURSE,
     LOAN_DISBURSE_SUCCESS,
     LOAN_DISBURSE_FAIL,

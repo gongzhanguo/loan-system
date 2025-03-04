@@ -1,2 +1,11 @@
-package com.dls.loan.interfaces.rest;public class LoanRepaymentController {
+package com.dls.loan.interfaces.rest;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RestController;
+
+@Slf4j
+@RestController
+public class LoanRepaymentController {
+
+
 }
