@@ -1,0 +1,22 @@
+server:
+  port: 8181
+
+logging:
+  level:
+    com.food.ordering.system: DEBUG
+
+spring:
+  datasource:
+    url: jdbc:mysql://root:qWYxHqFFHmJrrubhpoJIjPTlqEWbqUCl@switchback.proxy.rlwy.net:52537/railway?useSSL=false&serverTimezone=UTC
+    username: root
+    password: qWYxHqFFHmJrrubhpoJIjPTlqEWbqUCl
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: ALWAYS
+      schema-locations: classpath:init-schema.sql
+
+loan-service:
+  snow-flake:
+    datacenter_id: 1
+    machine_id: 1

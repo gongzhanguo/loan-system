@@ -1,0 +1,64 @@
+@startuml
+skinparam componentStyle rectangle
+left to right direction
+
+'------ 定义限界上下文 ------
+rectangle "贷款申请\n(Loan Application)" as LA {
+  [提交申请表单]
+  [验证基础数据]
+}
+
+rectangle "信用评估\n(Credit Assessment)" as CA {
+  [计算信用评分]
+  [生成评估报告]
+}
+
+rectangle "贷款审批\n(Loan Approval)" as LOAN {
+  [自动化审批]
+  [人工复核]
+}
+
+rectangle "放款管理\n(Disbursement)" as DISB {
+  [放款执行]
+  [资金流水记录]
+}
+
+rectangle "还款管理\n(Repayment)" as REPAY {
+  [生成还款计划]
+  [逾期处理]
+}
+
+rectangle "风险管理\n(Risk Management)" as RISK {
+  [实时监控]
+  [预警触发]
+}
+
+'------ 外部系统 ------
+cloud "征信系统\n(External Credit)" as CREDIT
+cloud "支付系统\n(Payment Gateway)" as PAY
+cloud "监控系统\n(Monitoring)" as MONITOR
+
+'------ 交互关系 ------
+LA --> CA : 触发评估\n**异步事件**
+CA --> LOAN : 传递评估结果\n**同步API**
+LOAN --> DISB : 审批通过后触发\n**同步API**
+DISB --> PAY : 调用支付接口\n**同步API**
+DISB --> REPAY : 生成还款计划\n**事件订阅**
+REPAY --> RISK : 推送还款状态\n**数据流**
+RISK --> MONITOR : 订阅风险指标\n**CDC/ETL**
+CA --> CREDIT : 查询征信数据\n**同步API**
+
+'------ 标注交互模式 ------
+note top of LA 
+  **职责**:
+  - 接收申请数据
+  - 基础验证
+end note
+
+note right of DISB 
+  **交互模式**:
+  - 同步API调用支付系统
+  - 异步生成还款计划
+end note
+
+@enduml

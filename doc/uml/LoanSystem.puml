@@ -1,0 +1,136 @@
+@startuml
+' 定义包（模块）
+package LoanCoreDomain {
+    package LoanManagement {
+        class LoanApplication {
+            + applicationId: String
+            + applicantInfo: ApplicantInfo
+            + loanAmount: BigDecimal
+            + term: int
+            + status: String
+            + submitApplication()
+            + approve()
+            + reject()
+        }
+
+        class LoanAccount {
+            + accountId: String
+            + remainingPrincipal: BigDecimal
+            + currentStatus: String
+            + createRepaymentSchedule()
+            + processPayment()
+        }
+
+        class RepaymentSchedule {
+            + installmentNumber: int
+            + dueDate: Date
+            + principalDue: BigDecimal
+            + interestDue: BigDecimal
+            + status: String
+            + calculateInstallment()
+        }
+    }
+
+    package InterestCalculation {
+        interface InterestCalculationStrategy {
+            + calculateInterest(LoanAccount, DateRange): BigDecimal
+        }
+
+        class EqualPrincipalStrategy {
+            + calculateInterest(LoanAccount, DateRange): BigDecimal
+        }
+
+        class EqualInstallmentStrategy {
+            + calculateInterest(LoanAccount, DateRange): BigDecimal
+        }
+
+        class CustomizedStrategy {
+            + calculateInterest(LoanAccount, DateRange): BigDecimal
+        }
+    }
+
+    package RiskControl {
+        class RiskAssessment {
+            + evaluateRisk(LoanApplication): RiskScore
+        }
+
+        class RiskEvaluationService {
+            + evaluateApplication(LoanApplication): boolean
+        }
+    }
+}
+
+' 定义值对象
+class ApplicantInfo {
+    + creditScore: int
+    + incomeProof: String
+}
+
+' 定义领域服务
+class LoanApprovalService {
+    + evaluateApplication(LoanApplication): boolean
+}
+
+class InterestCalculator {
+    + calculateInterest(LoanAccount, DateRange): BigDecimal
+}
+
+class RepaymentProcessor {
+    + processPayment(LoanAccount, PaymentAmount): void
+}
+
+' 定义仓储
+class LoanApplicationRepository {
+    + save(LoanApplication): void
+    + findById(applicationId: String): LoanApplication
+}
+
+class LoanAccountRepository {
+    + save(LoanAccount): void
+    + findById(accountId: String): LoanAccount
+}
+
+class LoanProductRepository {
+    + findById(productId: String): LoanProduct
+}
+
+' 定义领域事件
+class LoanApplicationSubmitted {
+    + applicationId: String
+    + timestamp: Date
+}
+
+class LoanApproved {
+    + applicationId: String
+    + timestamp: Date
+}
+
+class LoanRejected {
+    + applicationId: String
+    + timestamp: Date
+}
+
+class PaymentReceived {
+    + accountId: String
+    + amount: BigDecimal
+    + timestamp: Date
+}
+
+' 定义关系
+LoanApplication --> ApplicantInfo : contains
+LoanApplication --> LoanProduct : references
+LoanAccount --> RepaymentSchedule : contains
+LoanAccount --> InterestCalculationStrategy : uses
+RiskEvaluationService --> RiskAssessment : depends on
+LoanApprovalService --> RiskEvaluationService : depends on
+LoanApprovalService --> LoanApplicationRepository : depends on
+InterestCalculator --> InterestCalculationStrategy : depends on
+RepaymentProcessor --> LoanAccountRepository : depends on
+
+' 定义事件流
+LoanApplication --> LoanApplicationSubmitted : triggers
+LoanApplication --> LoanApproved : triggers
+LoanApplication --> LoanRejected : triggers
+RepaymentProcessor --> PaymentReceived : triggers
+
+@enduml

@@ -1,0 +1,33 @@
+@startuml
+!include <C4/C4_Container>
+
+!define SHOW_LEGEND
+!define SHOW_ALL_CONTAINERS
+
+title 贷款系统限界上下文交互图（C4容器图）
+
+Person(user, "借款人", "通过APP/官网发起贷款申请")
+
+Container_Boundary(system, "贷款系统") {
+    Container(app, "借款申请服务", "处理申请提交\n校验基础信息", "Web API")
+    Container(approval, "审批引擎", "执行风控规则\n人工审核流程", "同步调用")
+    Container(credit, "额度管理服务", "计算可用额度\n冻结/恢复额度", "数据库事务")
+    Container(contract, "合同管理服务", "生成电子合同\n管理签约状态", "文件存储")
+    Container(repayment, "还款计划服务", "创建分期账单\n计算逾期利息", "定时任务")
+    Container(payment, "支付网关", "对接银行/第三方支付\n执行资金流转", "HTTPS")
+}
+
+System_Ext(bank, "银行系统", "银联/网联支付通道")
+
+Rel(user, app, "提交申请", "POST")
+Rel(app, credit, "校验额度", "同步调用")
+Rel(app, approval, "触发审批", "异步事件")
+Rel(approval, contract, "生成合同", "命令")
+Rel(contract, credit, "扣减额度", "事务操作")
+Rel(contract, repayment, "创建还款计划", "事件驱动")
+Rel(repayment, payment, "发起扣款", "定时调用")
+Rel(payment, bank, "执行转账", "HTTPS")
+Rel(payment, credit, "恢复额度", "事务回调")
+
+Rel_R(approval, user, "返回审批结果", "WebSocket")
+@enduml

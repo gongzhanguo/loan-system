@@ -1,0 +1,41 @@
+@startuml
+' 定义参与者
+actor "申请人" as Applicant
+actor "风控人员" as RiskOfficer
+actor "财务人员" as FinanceOfficer
+
+' 定义系统组件
+rectangle "贷款核算系统" {
+  component "贷款申请模块" as LoanAppModule
+  component "风控审核模块" as RiskModule
+  component "合同生成模块" as ContractModule
+  component "放款执行模块" as DisbursementModule
+  database "贷款账户数据库" as LoanDB
+}
+
+' 定义流程步骤
+Applicant -> LoanAppModule : 提交贷款申请
+LoanAppModule --> LoanDB : 存储申请信息
+LoanAppModule -> RiskModule : 触发风控审核
+
+RiskModule --> RiskOfficer : 发送审核通知
+RiskOfficer -> RiskModule : 审核通过/拒绝
+RiskModule --> LoanDB : 更新申请状态
+
+RiskModule -> ContractModule : 审核通过时生成合同
+ContractModule --> Applicant : 发送电子合同签署链接
+Applicant -> ContractModule : 签署合同
+ContractModule --> LoanDB : 存储签署合同
+
+ContractModule -> DisbursementModule : 触发放款准备
+DisbursementModule --> FinanceOfficer : 发送放款审批请求
+FinanceOfficer -> DisbursementModule : 确认放款
+DisbursementModule --> LoanDB : 创建贷款账户并分配资金
+DisbursementModule --> Applicant : 通知放款完成
+
+' 异常流程
+RiskModule --> Applicant : 审核拒绝时通知
+ContractModule --> Applicant : 合同超时未签署时取消
+DisbursementModule --> FinanceOfficer : 放款失败时告警
+
+@enduml

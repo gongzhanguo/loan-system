@@ -1,0 +1,118 @@
+@startuml
+' 定义包（模块）
+package LoanAccountingSystem {
+    package LoanManagement {
+        class LoanAccount {
+            + accountId: String
+            + loanAmount: BigDecimal
+            + remainingPrincipal: BigDecimal
+            + interestRate: BigDecimal
+            + term: int
+            + status: String
+            + calculateInterest()
+            + generateRepaymentSchedule()
+        }
+
+        class RepaymentSchedule {
+            + scheduleId: String
+            + installmentNumber: int
+            + dueDate: Date
+            + principalDue: BigDecimal
+            + interestDue: BigDecimal
+            + totalDue: BigDecimal
+            + status: String
+            + markAsPaid()
+        }
+    }
+
+    package InterestCalculation {
+        interface InterestCalculationStrategy {
+            + calculateInterest(LoanAccount, DateRange): BigDecimal
+        }
+
+        class SimpleInterestStrategy {
+            + calculateInterest(LoanAccount, DateRange): BigDecimal
+        }
+
+        class CompoundInterestStrategy {
+            + calculateInterest(LoanAccount, DateRange): BigDecimal
+        }
+    }
+
+    package RepaymentProcessing {
+        class RepaymentProcessor {
+            + processPayment(LoanAccount, PaymentAmount): void
+            + applyPaymentToSchedule(RepaymentSchedule, PaymentAmount): void
+        }
+    }
+
+    package Accounting {
+        class Ledger {
+            + ledgerId: String
+            + entries: List<LedgerEntry>
+            + recordTransaction(amount: BigDecimal, type: String): void
+        }
+
+        class LedgerEntry {
+            + entryId: String
+            + amount: BigDecimal
+            + type: String
+            + timestamp: Date
+        }
+    }
+}
+
+' 定义值对象
+class PaymentAmount {
+    + amount: BigDecimal
+    + currency: String
+}
+
+class DateRange {
+    + startDate: Date
+    + endDate: Date
+}
+
+' 定义领域服务
+class InterestCalculator {
+    + calculateInterest(LoanAccount, DateRange): BigDecimal
+}
+
+' 定义仓储
+class LoanAccountRepository {
+    + save(LoanAccount): void
+    + findById(accountId: String): LoanAccount
+}
+
+class RepaymentScheduleRepository {
+    + save(RepaymentSchedule): void
+    + findByAccountId(accountId: String): List<RepaymentSchedule>
+}
+
+' 定义领域事件
+class InterestCalculated {
+    + accountId: String
+    + interestAmount: BigDecimal
+    + period: DateRange
+}
+
+class PaymentApplied {
+    + accountId: String
+    + paymentAmount: BigDecimal
+    + scheduleId: String
+}
+
+' 定义关系
+LoanAccount --> RepaymentSchedule : generates
+LoanAccount --> InterestCalculationStrategy : uses
+InterestCalculator --> InterestCalculationStrategy : depends on
+RepaymentProcessor --> LoanAccount : processes
+RepaymentProcessor --> RepaymentSchedule : updates
+Ledger --> LedgerEntry : contains
+RepaymentProcessor --> Ledger : records transactions
+
+' 定义事件流
+LoanAccount --> InterestCalculated : triggers
+RepaymentProcessor --> PaymentApplied : triggers
+
+@enduml
