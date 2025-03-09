@@ -89,9 +89,9 @@ DROP TABLE IF EXISTS loan_payment_outbox;
 CREATE TABLE loan_payment_outbox (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     tracking_id VARCHAR(32) NOT NULL,
-    event_type VARCHAR(50) NOT NULL,
+    domain_event_type VARCHAR(50) NOT NULL,
     payload TEXT NOT NULL,
-    payment_outbox_status VARCHAR(20) NOT NULL,
+    outbox_status VARCHAR(20) NOT NULL,
     created_date TIMESTAMP,
     last_modified_date TIMESTAMP,
     UNIQUE INDEX uk_tracking_id (tracking_id)

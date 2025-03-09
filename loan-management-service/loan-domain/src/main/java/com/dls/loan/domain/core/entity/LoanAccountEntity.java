@@ -135,6 +135,10 @@ public class LoanAccountEntity extends BaseDomainEntity<LoanAccountEntity> {
         this.loanStatus = LoanStatus.REVERSAL;
     }
 
+    public void cancel() {
+        this.loanStatus = LoanStatus.CANCELED;
+    }
+
     @Override
     public boolean sameIdentityAs(LoanAccountEntity other) {
         return other != null && loanId.equals(other.loanId);

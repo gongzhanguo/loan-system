@@ -1,4 +1,4 @@
-package com.dls.loan.domain.core.repaymentschedule;
+package com.dls.loan.domain.core.service.repaymentschedule;
 
 import com.dls.loan.domain.core.enums.RepaymentMethod;
 import com.dls.loan.domain.core.entity.LoanRepaymentScheduleEntity;

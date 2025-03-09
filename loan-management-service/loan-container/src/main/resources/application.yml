@@ -3,7 +3,7 @@ server:
 
 logging:
   level:
-    com.food.ordering.system: DEBUG
+    com.food.ordering.system: info
 
 spring:
   datasource:
@@ -19,3 +19,12 @@ spring:
 snow-flake:
   datacenter_id: 1
   machine_id: 1
+
+loan-service:
+  loan-disbursement-topic-name: LOAN_DISBURSEMENT_TOPIC
+  loan-disbursed-topic-name: LOAN_DISBURSED_TOPIC
+  outbox-scheduler-fixed-rate: 1000
+  outbox-scheduler-initial-delay: 5000
+
+kafka-consumer-config:
+  consumer-group-id: payment-topic-consumer

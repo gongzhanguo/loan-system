@@ -1,5 +1,6 @@
 package com.dls.loan.domain.core.event;
 
+import com.dls.loan.domain.core.valueobject.PaymentStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +10,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Builder
-public class LoanDisbursedEvent extends DomainEvent {
+public class LoanDisburseEvent extends DomainEvent {
 
     private String trackingId;
     private String loanId;
@@ -21,5 +22,6 @@ public class LoanDisbursedEvent extends DomainEvent {
     private String paymentAccountNo;
     private String paymentBankName;
     private String paymentBankNo;
+    private PaymentStatus paymentStatus;
 
 }

@@ -57,6 +57,13 @@ public class LoanDisbursementEntity extends BaseDomainEntity<LoanDisbursementEnt
 
     public void disbursed() {
         this.disbursementStatus = DisbursementStatus.SUCCESS;
+        loanAccount.disbursed();
+    }
+
+    public void cancel(DisburseFailType disburseFailType) {
+        this.disbursementStatus = DisbursementStatus.CANCEL;
+        this.disburseFailType = disburseFailType;
+        loanAccount.cancel();
     }
 
     public void reversal() {

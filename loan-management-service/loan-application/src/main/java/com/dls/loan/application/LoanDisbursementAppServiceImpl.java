@@ -5,12 +5,13 @@ import com.dls.loan.application.dto.disbursement.DisbursementLoanResponse;
 import com.dls.loan.application.dto.disbursement.TrackingDisburseStatusResponse;
 import com.dls.loan.application.mapper.LoanBankAccountDataMapper;
 import com.dls.loan.application.mapper.LoanDisbursementDataMapper;
-import com.dls.loan.domain.core.LoanDisbursementService;
+import com.dls.loan.domain.core.enums.DisburseFailType;
+import com.dls.loan.domain.core.service.LoanDisbursementService;
 import com.dls.loan.domain.core.entity.BankAccountEntity;
 import com.dls.loan.domain.core.entity.LoanDisbursementEntity;
 import com.dls.loan.domain.core.enums.DomainEventType;
 import com.dls.loan.domain.core.event.DomainEventPublisher;
-import com.dls.loan.domain.core.event.LoanDisbursedEvent;
+import com.dls.loan.domain.core.event.LoanDisburseEvent;
 import com.dls.loan.domain.core.exception.LoanDomainException;
 import com.dls.loan.domain.core.repository.LoanDisbursementRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -51,13 +52,13 @@ public class LoanDisbursementAppServiceImpl implements LoanDisbursementAppServic
         List<BankAccountEntity> bankAccountEntities = loanBankAccountDataMapper.bankAccountDTOToBankAccountEntities(
                 disbursementLoanCommand.getPaymentBankAccount(), disbursementLoanCommand.getAutoDeductionBankAccount());
 
-        LoanDisbursedEvent loanDisbursedEvent = loanDisbursementService
+        LoanDisburseEvent loanDisburseEvent = loanDisbursementService
                 .disburse(loanDisbursementEntity, bankAccountEntities);
 
         persistence(loanDisbursementEntity);
 
-        domainEventPublisher.publishEvent(loanDisbursedEvent.getTrackingId(),
-                DomainEventType.LOAN_DISBURSE, loanDisbursedEvent);
+        domainEventPublisher.publishEvent(loanDisburseEvent.getTrackingId(),
+                DomainEventType.LOAN_DISBURSE, loanDisburseEvent);
 
         return loanDisbursementDataMapper.loanDisbursementToDisbursementLoanResponse(loanDisbursementEntity);
     }
@@ -73,6 +74,30 @@ public class LoanDisbursementAppServiceImpl implements LoanDisbursementAppServic
                 .disbursementStatus(loanDisbursementEntity.get().getDisbursementStatus())
                 .fileType(loanDisbursementEntity.get().getDisburseFailType().toString())
                 .build();
+    }
+
+    @Override
+    public void disbursed(String trackingId) {
+        Optional<LoanDisbursementEntity> loanDisbursement = loanDisbursementRepository.findByTrackingId(trackingId);
+        if (!loanDisbursement.isPresent()) {
+            log.error("流水号对应放款信息不存在，流水号：{}", trackingId);
+            throw new LoanDomainException("流水号对应放款信息不存在，流水号：" + trackingId);
+        }
+        loanDisbursement.get().disbursed();
+
+        loanDisbursementRepository.save(loanDisbursement.get());
+    }
+
+    @Override
+    public void loanDisburseFail(String trackingId) {
+        Optional<LoanDisbursementEntity> loanDisbursement = loanDisbursementRepository.findByTrackingId(trackingId);
+        if (!loanDisbursement.isPresent()) {
+            log.error("流水号对应放款信息不存在，流水号：{}", trackingId);
+            throw new LoanDomainException("流水号对应放款信息不存在，流水号：" + trackingId);
+        }
+        loanDisbursement.get().cancel(DisburseFailType.PAYMENT_FAIL);
+
+        loanDisbursementRepository.save(loanDisbursement.get());
     }
 
     private void persistence(LoanDisbursementEntity loanDisbursementEntity) {

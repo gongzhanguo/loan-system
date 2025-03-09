@@ -1,4 +1,4 @@
-package com.dls.loan.domain.core;
+package com.dls.loan.domain.core.service;
 
 import com.dls.loan.domain.core.enums.LoanForm;
 import com.dls.loan.domain.core.enums.LoanStatus;
@@ -6,8 +6,8 @@ import com.dls.loan.domain.core.entity.BankAccountEntity;
 import com.dls.loan.domain.core.entity.LoanAccountEntity;
 import com.dls.loan.domain.core.entity.LoanDisbursementEntity;
 import com.dls.loan.domain.core.entity.LoanRepaymentScheduleEntity;
-import com.dls.loan.domain.core.event.LoanDisbursedEvent;
-import com.dls.loan.domain.core.repaymentschedule.RepaymentScheduleGenerator;
+import com.dls.loan.domain.core.event.LoanDisburseEvent;
+import com.dls.loan.domain.core.service.repaymentschedule.RepaymentScheduleGenerator;
 import com.dls.loan.domain.core.valueobject.LoanIdGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,12 +27,12 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 
 
     @Override
-    public LoanDisbursedEvent disburse(LoanDisbursementEntity loanDisbursementEntity, List<BankAccountEntity> bankAccountEntities) {
+    public LoanDisburseEvent disburse(LoanDisbursementEntity loanDisbursementEntity, List<BankAccountEntity> bankAccountEntities) {
         loanDisbursementEntity.validate();
         loanDisbursementEntity.initializer();
         LoanAccountEntity loanAccount = openAccount(loanDisbursementEntity, bankAccountEntities);
         loanDisbursementEntity.setLoanAccount(loanAccount);
-        return LoanDisbursedEvent.builder()
+        return LoanDisburseEvent.builder()
                 .loanId(loanDisbursementEntity.getLoanAccount().getLoanId())
                 .customerId(loanDisbursementEntity.getCustomerId())
                 .productId(loanDisbursementEntity.getProductId())

@@ -11,4 +11,8 @@ public interface LoanDisbursementAppService {
     DisbursementLoanResponse disburse(@Valid DisbursementLoanCommand disbursementLoanCommand);
 
     TrackingDisburseStatusResponse trackDisburseStatus(String trackingId);
+
+    void disbursed(String trackingId);
+
+    void loanDisburseFail(String trackingId);
 }
