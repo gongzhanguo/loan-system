@@ -45,6 +45,7 @@ public class LoanDisbursementEntity extends BaseDomainEntity<LoanDisbursementEnt
     private String paymentAccountNo;
     private String paymentBankName;
     private String paymentBankNo;
+    private String partnerId;
 
     public void validate() {
         validateDisbursementAmount();

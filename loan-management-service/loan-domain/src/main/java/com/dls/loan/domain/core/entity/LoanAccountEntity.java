@@ -51,10 +51,11 @@ public class LoanAccountEntity extends BaseDomainEntity<LoanAccountEntity> {
     private Integer currentOverdueTerm;
     private Integer currentOverdueDays;
     private LocalDate lastRepaymentDate;
+    private BigDecimal fundingRatio;
 
-    @OneToMany(mappedBy = "loanAccount", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "loanAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BankAccountEntity> bankAccountEntities;
-    @OneToMany(mappedBy = "loanAccount", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "loanAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<LoanRepaymentScheduleEntity> loanRepaymentScheduleEntities;
 
     public void initAndValidateLoanAccount() {

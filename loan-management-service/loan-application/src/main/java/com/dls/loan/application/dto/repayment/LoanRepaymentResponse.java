@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Builder
 @AllArgsConstructor
-public class RepaymentLoanResponse {
+public class LoanRepaymentResponse {
 
     @NotNull
     private final String loanId;

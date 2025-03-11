@@ -26,6 +26,7 @@ CREATE TABLE loan_account (
     current_overdue_term INT,
     current_overdue_days INT,
     last_repayment_date DATE,
+    fundingRatio DECIMAL(7,4),
     created_date TIMESTAMP,
     last_modified_date TIMESTAMP
 );
@@ -62,6 +63,7 @@ CREATE TABLE loan_disbursement (
     grace_period INT,
     disbursement_status VARCHAR(10),
     fail_type VARCHAR(10),
+    partnerId VARCHAR(20),
     created_date TIMESTAMP,
     last_modified_date TIMESTAMP
 );
